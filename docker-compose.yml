@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - product-service
+      - order-service
+      - customer-service
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_HOST=mongodb://mongo:27017/products
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "8082:8082"
+    environment:
+      - DB_HOST=mongodb://mongo:27017/orders
+
+  customer-service:
+    build: ./customer-service
+    ports:
+      - "8083:8083"
+    environment:
+      - DB_HOST=mongodb://mongo:27017/customers
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"

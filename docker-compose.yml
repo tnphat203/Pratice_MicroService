@@ -5,32 +5,48 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - PRODUCT_SERVICE_URL=http://product-service:8081
-      - ORDER_SERVICE_URL=http://order-service:8082
-      - CUSTOMER_SERVICE_URL=http://customer-service:8083
+      - PRODUCT_SERVICE_URL=http://product-service:2003
+      - ORDER_SERVICE_URL=http://order-service:2002
+      - CUSTOMER_SERVICE_URL=http://customer-service:2001
+    depends_on:
+      - product-service
+      - order-service
+      - customer-service
 
   product-service:
     build: ./product-service
     ports:
-      - "8081:8081"
+      - "2003:2003" # Map cổng container 2001 ra ngoài
     environment:
       - DB_HOST=mongodb://mongo:27017/products
+    depends_on:
+      - mongo
 
   order-service:
     build: ./order-service
     ports:
-      - "8082:8082"
+      - "2002:2002" # Map cổng container 2002 ra ngoài
     environment:
       - DB_HOST=mongodb://mongo:27017/orders
+    depends_on:
+      - mongo
 
   customer-service:
     build: ./customer-service
     ports:
-      - "8083:8083"
+      - "2001:2001" # Map cổng container 2003 ra ngoài
     environment:
       - DB_HOST=mongodb://mongo:27017/customers
+    depends_on:
+      - mongo
 
   mongo:
     image: mongo
+    container_name: mongo
     ports:
       - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

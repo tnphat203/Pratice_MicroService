@@ -1,12 +1,9 @@
+// filepath: d:\HocTap\HK8\KTPM\Pratice_MicroService\product-service\database\connectDB.js
 const mongoose = require("mongoose");
 
-// Hàm kết nối MongoDB
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.DB_HOST, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.DB_HOST);
     console.log("MongoDB connected successfully");
   } catch (error) {
     console.error("MongoDB connection failed:", error.message);

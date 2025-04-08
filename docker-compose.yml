@@ -1,13 +1,13 @@
-version: "3.8"
+version: '3.8'
 services:
   api-gateway:
     build: ./api-gateway
     ports:
       - "8080:8080"
-    depends_on:
-      - product-service
-      - order-service
-      - customer-service
+    environment:
+      - PRODUCT_SERVICE_URL=http://product-service:8081
+      - ORDER_SERVICE_URL=http://order-service:8082
+      - CUSTOMER_SERVICE_URL=http://customer-service:8083
 
   product-service:
     build: ./product-service

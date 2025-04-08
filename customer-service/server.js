@@ -1,12 +1,12 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const connectDB = require("./database/connectDB");
-const productRoutes = require("./routes/product.route"); // Import routes
+const connectDB = require("./database/connectDB"); // Import kết nối DB
+const customerRoutes = require("./routers/Customer.router"); // Import routes
+require("dotenv").config(); // Đọc file .env
 
 const app = express();
 const PORT = process.env.PORT || 2001;
 
-require("dotenv").config();
 // Middleware
 app.use(bodyParser.json());
 
@@ -14,9 +14,9 @@ app.use(bodyParser.json());
 connectDB();
 
 // Sử dụng routes
-app.use("/api", productRoutes);
+app.use("/api", customerRoutes);
 
 // Khởi chạy server
 app.listen(PORT, () => {
-  console.log(`Product Service is running on port ${PORT}`);
+  console.log(`Customer Service is running on port ${PORT}`);
 });

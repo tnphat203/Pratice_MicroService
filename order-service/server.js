@@ -1,14 +1,13 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const connectDB = require("./database/db");
-const orderRoutes = require("./routes/orderRoutes");
+const connectDB = require("./database/connectDB");
+const orderRoutes = require("./routers/order.router"); // Import routes
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 8082;
+const PORT = process.env.PORT || 2002;
 
 app.use(bodyParser.json());
-connectDB();
 app.use("/api", orderRoutes);
 
 app.listen(PORT, () => {

@@ -1,15 +1,8 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const connectDB = require("./database/connectDB");
-const orderRoutes = require("./routers/order.router"); // Import routes
+const app = require("./src/app")
 require("dotenv").config();
 
-const app = express();
-const PORT = process.env.PORT || 2002;
-
-app.use(bodyParser.json());
-app.use("/api", orderRoutes);
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Order Service is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

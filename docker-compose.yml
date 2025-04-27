@@ -1,52 +1,98 @@
-version: '3.8'
+version: '3'
 services:
   api-gateway:
     build: ./api-gateway
     ports:
-      - "8080:8080"
-    environment:
-      - PRODUCT_SERVICE_URL=http://product-service:2003
-      - ORDER_SERVICE_URL=http://order-service:2002
-      - CUSTOMER_SERVICE_URL=http://customer-service:2001
+      - "${API_GATEWAY_PORT}:3000"
     depends_on:
       - product-service
-      - order-service
-      - customer-service
+    networks:
+      - microservices-network
+    env_file:
+      - ./api-gateway/.env
 
   product-service:
     build: ./product-service
     ports:
-      - "2003:2003" # Map cổng container 2001 ra ngoài
+      - "${PRODUCT_SERVICE_PORT}:3001"
     environment:
-      - DB_HOST=mongodb://mongo:27017/products
+      - DB_HOST=postgres
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB_PRODUCT}
+      - DB_PORT=5436
+      - PORT=3001
     depends_on:
-      - mongo
-
-  order-service:
-    build: ./order-service
-    ports:
-      - "2002:2002" # Map cổng container 2002 ra ngoài
-    environment:
-      - DB_HOST=mongodb://mongo:27017/orders
-    depends_on:
-      - mongo
+      - postgres
+    networks:
+      - microservices-network
+    env_file:
+      - ./product-service/.env
 
   customer-service:
     build: ./customer-service
     ports:
-      - "2001:2001" # Map cổng container 2003 ra ngoài
+      - "${CUSTOMER_SERVICE_PORT}:3002"
     environment:
-      - DB_HOST=mongodb://mongo:27017/customers
+      - DB_HOST=postgres
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB_CUSTOMER}
+      - DB_PORT=5432
+      - PORT=3002
     depends_on:
-      - mongo
+      - postgres
+    networks:
+      - microservices-network
+    env_file:
+      - ./customer-service/.env
 
-  mongo:
-    image: mongo
-    container_name: mongo
+  order-service:
+    build: ./order-service
     ports:
-      - "27017:27017"
+      - "${ORDER_SERVICE_PORT}:3003"
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB_ORDER}
+      - DB_PORT=5436
+      - PORT=3003
+    depends_on:
+      - postgres
+    networks:
+      - microservices-network
+    env_file:
+      - ./order-service/.env
+
+  postgres:
+    container_name: microservice-postgres-1
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678
+    ports:
+      - "5432:5432"
     volumes:
-      - mongo-data:/data/db
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - microservices-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin-microservices
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: 123456
+    ports:
+      - "5050:80"
+    networks:
+      - microservices-network
 
 volumes:
-  mongo-data:
+  postgres_data:
+
+
+networks:
+  microservices-network:
+    driver: bridge

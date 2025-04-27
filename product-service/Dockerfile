@@ -1,11 +1,12 @@
-FROM node:16
-
+FROM node:16-slim
 WORKDIR /app
 
 COPY package*.json ./
+
 RUN npm install
 
 COPY . .
 
-EXPOSE 2001
+EXPOSE 3003
+
 CMD ["node", "server.js"]
